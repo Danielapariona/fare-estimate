@@ -65,7 +65,6 @@ if (navigator.geolocation) {
       new google.maps.places.Autocomplete(endLocation);
 
 
-
       // var geocoder = new google.maps.Geocoder();
       // Calculando ruta
       let directionsService = new google.maps.DirectionsService;
@@ -76,37 +75,35 @@ if (navigator.geolocation) {
         function geocodeResult(results, status) {
           // Verificamos el estatus
           if (status == 'OK') {
-              let latDestination = results[0].geometry.location.lat()
-              let lngDestination = results[0].geometry.location.lng()
-              console.log(latDestination); //latitud del destino
-              console.log(lngDestination); // longitud del destino
-              console.log(latitude); //latitud de origen
-              console.log(longitude);//latitud de destino
-              // Api de
-              let uberClientId = 'lgw2JdPQEJtjuFid5ujbgmeX8o0ZpmDw';
-              let uberServerToken ='ZqX0bbZHfbFGysRiOCYOWgaQcT7xgtDSGL7HF_NJ';
-              $.ajax({
-                url: 'https://api.uber.com/v1/estimates/price',
-                headers: {
-                  Authorization: 'Token ' + uberServerToken
-                },
-                data: {
-                  start_latitude: latitude,
-                  start_longitude: longitude,
-                  end_latitude: latDestination,
-                  end_longitude: lngDestination
-                },
-                success: function(result) {
-                  console.log(result);
-                }
-              });
-
-
+            let latDestination = results[0].geometry.location.lat();
+            let lngDestination = results[0].geometry.location.lng();
+            console.log(latDestination); // latitud del destino
+            console.log(lngDestination); // longitud del destino
+            console.log(latitude); // latitud de origen
+            console.log(longitude);// latitud de destino
+            // Api de
+            let uberClientId = 'I-bFsuJd_8jFGwijLlDg9h69C6UMnpgY';
+            let uberServerToken = 'p8he2p5v-nZf-z3ccaIUXFDUl0-7eND7Xfmy31sg';
+            $.ajax({
+              url: 'https://api.uber.com/v1/estimates/price',
+              headers: { 
+                Authorization: 'Token ' + uberServerToken
+              },
+              data: {
+                start_latitude: latitude,
+                start_longitude: longitude,
+                end_latitude: latDestination,
+                end_longitude: lngDestination
+              },
+              success: function(result) {
+                console.log(result);
+              }
+            });
           } else {
-              // En caso de no haber resultados o que haya ocurrido un error
-              alert("Geocoding no tuvo éxito debido a: " + status);
+            // En caso de no haber resultados o que haya ocurrido un error
+            alert('Geocoding no tuvo éxito debido a: ' + status);
           }
-      }
+        }
 
 
         directionsService.route({
@@ -133,7 +130,7 @@ if (navigator.geolocation) {
     let error = () => {
       showMap.innerHTML = '<p>No se ingresó correctamente la dirección. Busca de nuevo.</p>';
     };
-// 
+    // 
 
     // function success(pos) {
     //   // var crd = pos.coords;
