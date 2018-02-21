@@ -5,10 +5,8 @@ let longitude;
 
 if (navigator.geolocation) {
   function initMap() {
-
-
     // Función para usar la longitud y latitud
-    let localization = (position) => {      // retornando longitud y latitud actual
+    let localization = (position) => { // retornando longitud y latitud actual
       latitude = position.coords.latitude;
       longitude = position.coords.longitude;
       // inicio api google maps
@@ -16,8 +14,8 @@ if (navigator.geolocation) {
         lat: latitude,
         lng: longitude
       };
-
-      var uluru = { lat: latitude, lng: longitude };
+      var uluru = { lat: latitude,
+        lng: longitude };
       var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 16,
         center: uluru
@@ -27,18 +25,16 @@ if (navigator.geolocation) {
         map: map
       });
 
+      var address;
       let geocoder = new google.maps.Geocoder;
       let infowindow = new google.maps.InfoWindow;
       geocodeLatLng(geocoder, map, infowindow);
-
 
       
       function geocodeLatLng(geocoder, map, infowindow) {
         geocoder.geocode({
           'location': getPosition
-        }, function (results, status) {
-          // console.log(results);
-          // console.log(status);
+        }, function(results, status) {
           if (status === 'OK') {
             console.log(results[0]);
             if (results[0]) {
@@ -69,11 +65,50 @@ if (navigator.geolocation) {
       new google.maps.places.Autocomplete(endLocation);
 
 
+
+      // var geocoder = new google.maps.Geocoder();
       // Calculando ruta
       let directionsService = new google.maps.DirectionsService;
       let directionsDisplay = new google.maps.DirectionsRenderer;
       let calculateAndDisplayRoute = (directionsService, directionsDisplay) => {
-        console.log(startLocation);
+        var address = endLocation.value;
+        geocoder.geocode({ 'address': address}, geocodeResult);
+        function geocodeResult(results, status) {
+          // Verificamos el estatus
+          if (status == 'OK') {
+              let latDestination = results[0].geometry.location.lat()
+              let lngDestination = results[0].geometry.location.lng()
+              console.log(latDestination); //latitud del destino
+              console.log(lngDestination); // longitud del destino
+              console.log(latitude); //latitud de origen
+              console.log(longitude);//latitud de destino
+              // Api de
+              let uberClientId = 'lgw2JdPQEJtjuFid5ujbgmeX8o0ZpmDw';
+              let uberServerToken ='ZqX0bbZHfbFGysRiOCYOWgaQcT7xgtDSGL7HF_NJ';
+              $.ajax({
+                url: 'https://api.uber.com/v1/estimates/price',
+                headers: {
+                  Authorization: 'Token ' + uberServerToken
+                },
+                data: {
+                  start_latitude: latitude,
+                  start_longitude: longitude,
+                  end_latitude: latDestination,
+                  end_longitude: lngDestination
+                },
+                success: function(result) {
+                  console.log(result);
+                }
+              });
+
+
+          } else {
+              // En caso de no haber resultados o que haya ocurrido un error
+              alert("Geocoding no tuvo éxito debido a: " + status);
+          }
+      }
+
+
         directionsService.route({
           origin: startLocation.value,
           destination: endLocation.value,
@@ -88,20 +123,31 @@ if (navigator.geolocation) {
       };
 
 
-
-
-            
-
-    }
+      directionsDisplay.setMap(map);
+      let traceRoute = () => {
+        calculateAndDisplayRoute(directionsService, directionsDisplay);
+      };
+      document.getElementById('get-route').addEventListener('click', traceRoute);
+    };
 
     let error = () => {
       showMap.innerHTML = '<p>No se ingresó correctamente la dirección. Busca de nuevo.</p>';
     };
+// 
+
+    // function success(pos) {
+    //   // var crd = pos.coords;
+    //   console.log(pos);
+    //   // console.log(crd);
+    //   // if (target.latitude === crd.latitude && target.longitude === crd.longitude) {
+    //   //   console.log('Congratulation, you reach the target');
+    //   //   navigator.geolocation.clearWatch(id);
+    //   // }
+    // };
+
+
     navigator.geolocation.getCurrentPosition(localization, error);
 
-
-
-
-
+    // navigator.geolocation.watchPosition(success);
   }
 } 
